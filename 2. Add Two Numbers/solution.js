@@ -14,11 +14,9 @@ const {ListNode}  = require('./ListNode');
     carry = 0;
     debugger;
     while(l1 != null || l2 != null)
-   // for(let i=0;i<3;i++)
-    {
-        
+    {    
         let tempSum = 0;
-       
+    
         //calc
         if(l1 !== null) tempSum += l1.val; 
         if(l2 !== null) tempSum += l2.val;
@@ -34,9 +32,7 @@ const {ListNode}  = require('./ListNode');
       //  if(!res){ res = tmp; head = tmp;} //for first time
 
         if(l1 !== null)  l1 = l1.next;
-        if(l2 !== null)  l2 = l2.next;
-       
-        
+        if(l2 !== null)  l2 = l2.next; 
         
         if(res !== null){
           res.next = tmp; 
