@@ -14,7 +14,6 @@ const {ListNode}  = require('./ListNode');
     carry = 0;
     debugger;
     while(l1 != null || l2 != null)
-   // for(let i=0;i<3;i++)
     {
         
         let tempSum = 0;
