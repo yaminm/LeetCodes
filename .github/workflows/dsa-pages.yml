@@ -27,40 +27,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
-
-      - name: Validate generated site bundle
+      - name: Validate site bundle
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import base64, gzip, re
-
-          parts = []
-          for i in range(1, 7):
-              text = Path(f'dsa-mastery/bundle-{i}.js').read_text(encoding='utf-8')
-              match = re.search(r"\+'([^']+)';", text)
-              assert match, f'Bundle part {i} is malformed'
-              parts.append(match.group(1))
-
-          html = gzip.decompress(base64.b64decode(''.join(parts))).decode('utf-8')
-          assert 'DSA Interview Mastery' in html
-          assert 'window.DSA_DATA' in html
-          assert '01.10.2026' in html
-          assert 'grid-template-columns:repeat(3,minmax(0,1fr))' in html
-          assert 'overflow-x:hidden' in html
-          print(f'Validated DSA site bundle: {len(html)} HTML chars across {len(parts)} parts')
+          text=Path('dsa-mastery/bundle.js').read_text()
+          m=re.search(r"window.__DSA_BUNDLE='([^']+)'", text)
+          assert m, 'bundle missing'
+          html=gzip.decompress(base64.b64decode(m.group(1))).decode()
+          for marker in ['MISSION CONTROL','COURSE MAP','JAVA DOJO','window.DSA_DATA','search-modal']:
+              assert marker in html, f'missing {marker}'
+          print(f'Validated redesigned site: {len(html)} chars')
           PY
-
       - name: Upload DSA site
         uses: actions/upload-pages-artifact@v4
         with:
           path: dsa-mastery
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
