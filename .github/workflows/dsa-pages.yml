@@ -1,0 +1,42 @@
+name: Deploy DSA Mastery to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'dsa-mastery/**'
+      - '.github/workflows/dsa-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+timeout-minutes: 10
+
+concurrency:
+  group: dsa-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload DSA site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dsa-mastery
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
