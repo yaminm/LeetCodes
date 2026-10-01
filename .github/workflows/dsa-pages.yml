@@ -37,13 +37,16 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import base64, gzip, re
-          text=Path('dsa-mastery/bundle.js').read_text()
-          m=re.search(r"window.__DSA_BUNDLE='([^']+)'", text)
-          assert m, 'bundle missing'
-          html=gzip.decompress(base64.b64decode(m.group(1))).decode()
+          parts=[]
+          for i in range(1,7):
+              text=Path(f'dsa-mastery/bundle-{i}.js').read_text()
+              m=re.search(r"\+'([^']+)';", text)
+              assert m, f'bundle-{i}.js malformed'
+              parts.append(m.group(1))
+          html=gzip.decompress(base64.b64decode(''.join(parts))).decode()
           for marker in ['MISSION CONTROL','COURSE MAP','JAVA DOJO','window.DSA_DATA','search-modal']:
               assert marker in html, f'missing {marker}'
-          print(f'Validated redesigned site: {len(html)} chars')
+          print(f'Validated redesigned site: {len(html)} chars across {len(parts)} chunks')
           PY
       - name: Upload DSA site
         uses: actions/upload-pages-artifact@v4
