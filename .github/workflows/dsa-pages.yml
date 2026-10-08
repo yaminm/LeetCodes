@@ -48,6 +48,21 @@ jobs:
               assert marker in html, f'missing {marker}'
           print(f'Validated redesigned site: {len(html)} chars across {len(parts)} chunks')
           PY
+      - name: Validate Java Dojo v2
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          idx = Path('dsa-mastery/index.html').read_text(encoding='utf-8')
+          dojo = Path('dsa-mastery/dojo-v2.js').read_text(encoding='utf-8')
+          assert 'dojo-v2.js?v=20261009' in idx
+          assert 'let html=await new Response' in idx
+          for marker in ['Quick Warm-up','Diagnostic','Weak Spots','Interview Sprint','r-length','r-div','c-freq','t-bfs','dsaJavaDojoV2']:
+              assert marker in dojo, f'missing dojo marker: {marker}'
+          assert dojo.count('{id:') >= 25
+          print('Validated adaptive Java Dojo v2')
+          PY
+
       - name: Upload DSA site
         uses: actions/upload-pages-artifact@v4
         with:
